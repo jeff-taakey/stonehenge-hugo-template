@@ -1,0 +1,42 @@
+{{ if .Params.tags }}
+<section class="related-posts mt-12">
+  <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-200">
+    Related Articles
+  </h2>
+  <ul class="space-y-4 text-lg">
+    {{ $page := . }}
+    {{ $bestMatches := slice }}
+
+    {{ range where site.RegularPages "Type" "in" site.Params.mainSections }}
+      {{ if ne .Permalink $page.Permalink }}
+        {{ $commonTags := intersect .Params.tags $page.Params.tags }}
+        {{ $commonCats := intersect .Params.categories $page.Params.categories | default (slice) }}
+        {{ $score := add (len $commonTags) (mul (len $commonCats) 2) }}
+        {{ if gt $score 0 }}
+          {{ $bestMatches = $bestMatches | append (dict "page" . "score" $score) }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+
+    {{ $bestMatches = sort $bestMatches "score" "desc" }}
+    {{ $count := len $bestMatches }}
+
+    {{ if gt $count 0 }}
+      {{ range first 5 $bestMatches }}
+        <li class="flex items-baseline leading-relaxed py-1">
+          <span class="w-6 shrink-0 text-gray-600 dark:text-gray-400 select-none">·</span>
+          <a href="{{ .page.Permalink }}"
+             class="text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200">
+            {{ .page.Title }}
+          </a>
+        </li>
+      {{ end }}
+    {{ else }}
+      <li class="flex items-baseline text-gray-500 dark:text-gray-400 italic py-1">
+        <span class="w-6 shrink-0 text-gray-600 dark:text-gray-400 select-none">·</span>
+        No related articles found yet.
+      </li>
+    {{ end }}
+  </ul>
+</section>
+{{ end }}
