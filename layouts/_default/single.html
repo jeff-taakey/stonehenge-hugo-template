@@ -112,6 +112,12 @@
       {{ end }}
     </footer>
   </article>
+
+  {{/* Jeff Taakey: 手动引入公式解析器 */}}
+  {{ if .Params.math }}
+    {{ partial "math.html" . }}
+  {{ end }}
+  
 {{ end }}
 
 {{ define "SingleAuthor" }}
