@@ -1,0 +1,79 @@
+/* --- 基础布局优化 --- */
+.footer-container {
+    padding: 2rem 1rem;
+    text-align: center;
+    font-size: 0.85rem;
+}
+
+/* 支付徽章居中且等比例缩小 */
+.trust-badges img {
+    height: 30px;
+    width: auto;
+    margin: 1rem auto;
+    display: block;
+    max-width: 90%; /* 防止溢出移动端屏幕 */
+}
+
+/* --- PC端链接样式: 使用伪元素生成竖线 --- */
+.legal-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0 15px;
+    margin: 1rem 0;
+}
+
+.legal-links a {
+    color: inherit;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.legal-links a:hover {
+    opacity: 0.7;
+}
+
+/* 在PC端添加竖线分隔 */
+@media (min-width: 768px) {
+    .legal-links a:not(:last-child)::after {
+        content: "|";
+        margin-left: 15px;
+        color: #4a5568; /* 较暗的灰色，不抢视觉 */
+    }
+}
+
+/* --- 移动端响应式核心优化 --- */
+@media (max-width: 767px) {
+    .legal-links {
+        flex-direction: column; /* 垂直堆叠，消除拥挤感 */
+        gap: 12px 0;
+    }
+
+    .trust-badges img {
+        height: 25px; /* 移动端适当缩小徽标 */
+    }
+
+    .copyright, .founder-credit {
+        line-height: 1.6;
+        padding: 0 10px;
+    }
+
+    .secure-tag {
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* 修正 Languages 列表的链接样式，防止被 Prose 全局样式破坏 */
+.grid a.group {
+    text-decoration: none !important;
+}
+
+/* 确保卡片在暗黑模式下有清晰的层级感 */
+.dark .group div {
+    background-color: #1e293b; /* 匹配主题的深灰色 */
+}
+
+.dark .group:hover div {
+    background-color: #1e293b;
+    border-color: #3b82f6;
+}

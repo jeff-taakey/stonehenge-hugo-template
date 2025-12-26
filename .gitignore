@@ -3,6 +3,9 @@ public/
 resources/_gen/
 .hugo_build.lock
 
+# Jeff Taakey
+draft/
+
 # local temp files
 .tmp/
 content-temp/
