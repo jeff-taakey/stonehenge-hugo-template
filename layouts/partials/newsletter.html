@@ -1,0 +1,40 @@
+{{/* 1. 改进提取逻辑：获取整个路径并处理成 ID 格式 */}}
+{{/* 将 "aws/sap-c02" 这种路径转换为 "aws-sap-c02" */}}
+{{ $sectionPath := "" }}
+{{ if .File }}
+    {{ $sectionPath = .File.Dir | default .Section | replaceRE "/$" "" | replaceRE "/" "-" | lower }}
+{{ else }}
+    {{ $sectionPath = .Section | replaceRE "/" "-" | lower }}
+{{ end }}
+
+{{/* 2. 尝试从数据文件匹配配置 */}}
+{{ $config := index .Site.Data.certificates $sectionPath }}
+
+{{/* 如果找不到全路径匹配，尝试回退到顶级 Section (例如只有 "aws") */}}
+{{ if not $config }}
+    {{ $config = index .Site.Data.certificates .Section }}
+{{ end }}
+
+{{/* 3. 最终变量赋值 */}}
+{{ $title := "" }}
+{{ $uid := "" }}
+{{ $desc := "" }}
+
+{{ if $config }}
+    {{ $title = $config.title }}
+    {{ $uid = $config.uid }}
+    {{ $desc = $config.desc }}
+{{ else }}
+    {{/* 默认降级为 SAA */}}
+    {{ $title = "Accelerate Your Cloud Certification." }}
+    {{ $uid = "eed0c8ec61" }}
+    {{ $desc = "Stop memorizing exam dumps. Join our waitlist for logic-driven blueprints tailored to your specific certification path." }}
+{{ end }}
+
+<div class="mt-12 p-6 bg-gray-50 dark:bg-zinc-800 rounded-xl border border-gray-200 dark:border-zinc-700">
+  <h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">{{ $title }}</h2>
+  <p class="mb-6 text-gray-600 dark:text-gray-400">{{ $desc }}</p>
+  <div class="ck-form-container">
+    <script async data-uid="{{ $uid }}" src="https://stonehenge.kit.com/{{ $uid }}/index.js"></script>
+  </div>
+</div>

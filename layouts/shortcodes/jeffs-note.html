@@ -1,0 +1,7 @@
+{{ $notePath := "assets/data/jeff-note-content.md" }}
+
+{{ $content := readFile $notePath }}
+
+<div class="jeffs-note-container">
+    {{ $content | markdownify }}
+</div>

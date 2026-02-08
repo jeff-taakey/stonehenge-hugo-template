@@ -26,11 +26,17 @@
       </div>
       {{ if not (.Params.showAuthorBottom | default (site.Params.article.showAuthorBottom | default false)) }}
         {{ template "SingleAuthor" . }}
+        <!-- Jeff Taakey: Jeff's Note -->
+        {{ if not .Params.hide_jeffs_note }}
+          <!-- {{ partial "jeffs-note-logic.html" . }} -->
+          <!-- {{ partial "manifesto.html" . }} -->
+        {{ end }}
       {{ end }}
     </header>
 
     {{/* Body */}}
     <section class="flex flex-col max-w-full mt-0 prose dark:prose-invert lg:flex-row">
+
       {{ $enableToc := site.Params.article.showTableOfContents | default false }}
       {{ $enableToc = .Params.showTableOfContents | default $enableToc }}
       {{ $showToc := and $enableToc (in .TableOfContents "<ul") }}
@@ -44,7 +50,6 @@
           </div>
         </div>
       {{ end }}
-
 
       <div class="min-w-0 min-h-0 max-w-fit">
         {{ partial "series/series.html" . }}
@@ -69,7 +74,6 @@
         {{ partial "series/series-closed.html" . }}
         {{ partial "sharing-links.html" . }}
         {{ partial "related.html" . }}
-
         {{/* Jeff Taakey: add mermaid init logic */}}
         {{ partial "mermaid-init-logic.html" . }}
       </div>
@@ -90,13 +94,17 @@
           data-oid="views_{{ $path }}"
           data-oid-likes="likes_{{ $path }}"></script>
       {{ end }}
+
     </section>
 
     {{/* Jeff Taakey: 相关文章 */}}
     {{ partial "related-posts.html" . }}
-    
-    {{/* 创始人/站群介绍模块：最终位置 */}}
-    <!-- {{ partial "author-founder-bio.html" . }} -->
+
+    {{/* Jeff Taakey: subscribe 订阅框 */}}
+    {{/* 逻辑：如果没有手动隐藏，且页面中没有使用 gate shortcode，才显示 newsletter */}}
+    {{ if and (not .Params.hide_newsletter) (not (.HasShortcode "gate")) }}
+      {{ partial "newsletter.html" . }}
+    {{ end }}
 
     {{/* Footer */}}
     <footer class="pt-8 max-w-prose print:hidden">
@@ -114,13 +122,15 @@
         {{ end }}
       {{ end }}
     </footer>
-  </article>
 
-  {{/* Jeff Taakey: 手动引入公式解析器 */}}
-  {{ if .Params.math }}
-    {{ partial "math.html" . }}
-  {{ end }}
-  
+    {{/* Jeff Taakey: about this site */}}
+    <section class="mt-8 max-w-prose">
+    {{ if not .Params.hide_founder_content }}
+      <!-- {{ partial "about-this-site.html" . }} -->
+    {{ end }}
+    </section>
+    
+  </article>
 {{ end }}
 
 {{ define "SingleAuthor" }}

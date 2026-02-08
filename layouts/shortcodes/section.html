@@ -1,0 +1,31 @@
+{{ $key := .Get 0 }}
+{{ $level := .Get 1 | default 2 }}
+{{ $page := .Page }}
+{{ $cert := $page.Params.cert | lower }}
+{{ $provider := $page.Params.provider | lower }}
+
+{{/* 获取标题文字 */}}
+{{ $title := "" }}
+{{ if and $cert (index .Site.Data.headings $cert) (index (index .Site.Data.headings $cert) $key) }}
+    {{ $title = index (index .Site.Data.headings $cert) $key }}
+{{ else if and $provider (index .Site.Data.headings $provider) (index (index .Site.Data.headings $provider) $key) }}
+    {{ $title = index (index .Site.Data.headings $provider) $key }}
+{{ else }}
+    {{ $title = index .Site.Data.headings.default $key }}
+{{ end }}
+
+{{/* 修复 TOC 的关键：确保渲染为标准的 HTML 标签 */}}
+{{ if $title }}
+    {{/* 关键点 1: ID 必须使用 .Page.RenderString 处理或锚点化，以便 TOC 识别 */}}
+    {{ $id := $title | urlize }}
+    
+    <h{{ $level }} id="{{ $id }}">
+        {{- $title -}}
+        {{/* 关键点 2: 这里的锚点 link 必须符合 Blowfish 的 CSS 类名才能正确显示 */}}
+        <a class="anchor" href="#{{ $id }}" aria-hidden="true">#</a>
+    </h{{ $level }}>
+{{ else }}
+    <h{{ $level }} style="color:red;">MISSING_KEY: {{ $key }}</h{{ $level }}>
+{{ end }}
+
+{{ .Page.Scratch.Set "hasCustomHeadings" true }}

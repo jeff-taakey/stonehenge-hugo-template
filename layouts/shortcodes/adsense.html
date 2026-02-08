@@ -1,0 +1,15 @@
+{{ if .IsNamedParams }}
+    <div class="adsense-container" style="min-height: 250px; margin: 25px 0;"> 
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ .Site.Params.advertisement.adsense }}"></script>
+        <ins class="adsbygoogle"
+             style="display:block; text-align:center;"
+             data-ad-layout="{{ .Get "layout" | default "in-article" }}"
+             data-ad-format="{{ .Get "format" | default "fluid" }}"
+             data-ad-client="{{ .Site.Params.advertisement.adsense }}"
+             data-ad-slot="{{ .Get "slot" }}"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+{{ end }}
+

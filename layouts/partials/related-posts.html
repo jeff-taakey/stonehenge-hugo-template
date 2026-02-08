@@ -5,16 +5,22 @@
   </h2>
   <ul class="space-y-4 text-lg">
     {{ $page := . }}
+    {{ $currentDir := .File.Dir }} {{/* 获取当前文章所在的目录，如 content/aws/saa-c03/ */}}
     {{ $bestMatches := slice }}
 
-    {{ range where site.RegularPages "Type" "in" site.Params.mainSections }}
+    {{/* 仅在同一级目录下查找相关文章 */}}
+    {{ range where site.RegularPages "File.Dir" "==" $currentDir }}
       {{ if ne .Permalink $page.Permalink }}
         {{ $commonTags := intersect .Params.tags $page.Params.tags }}
         {{ $commonCats := intersect .Params.categories $page.Params.categories | default (slice) }}
+        
+        {{/* 计算匹配分数：标签匹配得 1 分，分类匹配得 2 分 */}}
         {{ $score := add (len $commonTags) (mul (len $commonCats) 2) }}
-        {{ if gt $score 0 }}
-          {{ $bestMatches = $bestMatches | append (dict "page" . "score" $score) }}
-        {{ end }}
+        
+        {{/* 如果在同一认证目录下，即便标签不完全一致也给予基础分以保证推荐 */}}
+        {{ $score = add $score 1 }}
+
+        {{ $bestMatches = $bestMatches | append (dict "page" . "score" $score) }}
       {{ end }}
     {{ end }}
 
@@ -34,7 +40,7 @@
     {{ else }}
       <li class="flex items-baseline text-gray-500 dark:text-gray-400 italic py-1">
         <span class="w-6 shrink-0 text-gray-600 dark:text-gray-400 select-none">·</span>
-        No related articles found yet.
+        Stay tuned for more {{ path.Base $currentDir | upper }} resources.
       </li>
     {{ end }}
   </ul>

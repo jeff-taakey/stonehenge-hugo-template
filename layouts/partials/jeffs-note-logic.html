@@ -1,0 +1,20 @@
+{{/* 尝试读取全局配置文件 */}}
+{{ $globalNotePath := "assets/data/jeff-note-content.md" }}
+{{ $globalContent := "" }}
+
+{{ if (fileExists $globalNotePath) }}
+    {{ $globalContent = readFile $globalNotePath | markdownify }}
+{{ end }}
+
+<aside class="jeffs-note-container my-8 px-6 py-4 border-l-4 border-primary-500 bg-neutral-100 dark:bg-neutral-800 rounded-r-lg shadow-sm">
+    <div class="prose prose-sm dark:prose-invert italic text-neutral-700 dark:text-neutral-300">
+        {{ $globalContent }}
+    </div>
+
+    {{/* 如果页面 Front Matter 中定义了特定 note，则显示在下方 */}}
+    {{ if .Params.specific_note }}
+    <div class="mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-700 text-sm font-medium text-neutral-800 dark:text-neutral-200">
+        {{ .Params.specific_note | markdownify }}
+    </div>
+    {{ end }}
+</aside>

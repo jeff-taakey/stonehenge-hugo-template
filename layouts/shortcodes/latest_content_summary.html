@@ -1,0 +1,60 @@
+{{/* Shortcode: latest_content_summary 
+    功能：根据路径前缀动态提取最新文章，支持 /aws (全家桶) 或 /aws/saa-c03 (精准栏目)
+*/}}
+
+{{ $count := .Get "count" | default 5 }}
+{{ $sectionParam := .Get "section" | default "" }}
+{{ $latestContent := slice }}
+
+{{/* 核心逻辑：
+    1. 如果没有传 section，则执行全局模式（扫描所有云平台目录）。
+    2. 如果传了 section，则匹配页面路径中包含该字符串的所有 RegularPages。
+*/}}
+
+{{ range .Site.RegularPages }}
+    {{ $page := . }}
+    {{ if .File }}
+        {{/* 获取页面的相对路径，例如 "aws/saa-c03/post-1.md" */}}
+        {{ $path := .File.Path }}
+        
+        {{ if $sectionParam }}
+            {{/* 定向模式：
+               只要路径以输入的 section 开头，就收录。
+               例如输入 "aws"，则匹配 "aws/saa-c03/..." 和 "aws/sap-c02/..."
+            */}}
+            {{ if (strings.HasPrefix $path $sectionParam) }}
+                {{ $latestContent = $latestContent | append $page }}
+            {{ end }}
+        {{ else }}
+            {{/* 全局默认模式：
+               保留原有的三大云平台过滤逻辑
+            */}}
+            {{ $isTarget := false }}
+            {{ $platforms := slice "aws/" "azure/" "gcp/" }}
+            {{ range $platforms }}
+                {{ if (strings.HasPrefix $path .) }}
+                    {{ $isTarget = true }}
+                {{ end }}
+            {{ end }}
+            {{ if $isTarget }}
+                {{ $latestContent = $latestContent | append $page }}
+            {{ end }}
+        {{ end }}
+    {{ end }}
+{{ end }}
+
+{{/* 按日期降序排序并取前 N 条 */}}
+{{ $latestContent = first $count (sort $latestContent ".Date" "desc") }}
+
+<ul class="latest-content-list">
+  {{ range $latestContent }}
+    <li class="latest-content-item">
+      <a href="{{ .RelPermalink }}" title="{{ .Title }}">
+        <span class="content-title">{{ .Title }}</span> 
+        <span class="content-meta">({{ .Date.Format "Jan 2, 2006" }})</span>
+      </a>
+    </li>
+  {{ else }}
+    <li class="no-content-found">No content found for prefix: "{{ $sectionParam }}"</li>
+  {{ end }}
+</ul>

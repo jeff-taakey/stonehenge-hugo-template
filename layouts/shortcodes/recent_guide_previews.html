@@ -1,0 +1,37 @@
+{{/* Shortcode: recent_guide_previews - 最终修正版，确保排序对象为 Page */}}
+{{ $platform := (.Get "platform") }}
+{{ $count := default 3 (.Get "count") }}
+{{ $searchTerm := printf "%s/" $platform }}
+{{ $allPages := slice }}
+
+{{/* 循环所有常规页面，将 Page 对象存储到 $page 变量 */}}
+{{ range .Site.RegularPages }}
+    {{ $page := . }} 
+    
+    {{/* 确保文件存在，并检查其路径是否包含目标 platform/ */}}
+    {{ if and .File (strings.Contains .File.Dir $searchTerm) }}
+        {{/* 检查成功，将 Page 对象（$page）添加到集合 */}}
+        {{ $allPages = $allPages | append $page }}
+    {{ end }}
+{{ end }}
+
+{{/* 排序：现在 $allPages 包含 Page 对象，可以使用 .Date 属性 */}}
+{{ $previews := first $count (sort $allPages ".Date" "desc") }}
+
+<div class="platform-preview-grid">
+  {{ range $previews }}
+    <article class="preview-item">
+      <h3 class="preview-title">
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      </h3>
+      
+      <div class="preview-summary">
+        {{ .Summary | safeHTML }} 
+      </div>
+
+      <a href="{{ .RelPermalink }}" class="read-more-link">Read Deep Dive &rarr;</a>
+    </article>
+  {{ else }}
+    <p>No recent Q-Drills published for {{ $platform | upper }} yet. Please check back soon.</p>
+  {{ end }}
+</div>

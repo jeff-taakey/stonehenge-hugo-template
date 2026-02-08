@@ -1,0 +1,54 @@
+{{/* layouts/shortcodes/gate.html */}}
+{{- $columnId := .Get "form" | default "default" -}}
+{{- $ordinal := .Ordinal -}}
+
+{{/* ID 映射逻辑保持不变 */}}
+{{ $kitFormId := "" }}{{ $kitUid := "" }}
+{{ if eq $columnId "saa-c03" }}{{ $kitFormId = "8908265" }}{{ $kitUid = "f24528f96e" }}
+{{ else if eq $columnId "sap-c02" }}{{ $kitFormId = "8908262" }}{{ $kitUid = "be7ff5f1b7" }}
+{{ else if eq $columnId "az-104" }}{{ $kitFormId = "8908269" }}{{ $kitUid = "b5eee6e736" }}
+{{ else if eq $columnId "az-305" }}{{ $kitFormId = "8908270" }}{{ $kitUid = "39fb67502f" }}
+{{ else if eq $columnId "ace" }}{{ $kitFormId = "8908271" }}{{ $kitUid = "f80f51bab7" }}
+{{ else if eq $columnId "pca" }}{{ $kitFormId = "8908273" }}{{ $kitUid = "396aa73e05" }}
+{{ else }}{{ $kitFormId = "8908265" }}{{ $kitUid = "f24528f96e" }}{{ end }}
+
+<div id="gate-wrapper-{{ $ordinal }}" class="gate-container relative group my-10" data-column="{{ $columnId }}">
+    <div class="gate-content filter blur-md select-none pointer-events-none transition-all duration-700">
+        {{ .Inner | markdownify }}
+    </div>
+    
+    <div class="gate-overlay absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/60 dark:bg-black/60 backdrop-blur-sm p-4 text-center rounded-xl border border-neutral-200 dark:border-neutral-700">
+        <div class="max-w-md w-full bg-white dark:bg-neutral-800 p-6 rounded-2xl shadow-2xl border border-neutral-100 dark:border-neutral-700">
+            <h3 class="flex items-center justify-center gap-2 text-xl sm:text-2xl font-extrabold mb-2 text-neutral-900 dark:text-white tracking-tight">
+                <span>💎 Professional Decision Matrix</span>
+            </h3>
+            
+            <p class="text-sm text-neutral-600 dark:text-neutral-300 mb-6">
+                This <span class="font-bold text-primary-600">{{ upper $columnId }}</span> professional section is locked.<br/>
+                Free beta access reveals the exam logic.
+            </p>
+
+            <form action="https://app.kit.com/forms/{{ $kitFormId }}/subscriptions" method="post">
+                <input 
+                    type="email" 
+                    name="email_address" 
+                    required 
+                    placeholder="Enter your email" 
+                    class="w-full px-4 py-3 rounded-lg border border-neutral-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white mb-4 outline-none focus:ring-2 focus:ring-primary-500"
+                >
+
+                <input type="hidden" name="fields[sub_source]" value="cert_devpro_gate_{{ $columnId }}">
+                
+                <input type="hidden" name="redirect_url" value="{{ .Page.Permalink }}?unlocked=true">
+                
+                <button type="submit" class="w-full py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-lg transition-all shadow-lg">
+                    View Decision Matrix
+                </button>
+            </form>
+
+            <div class="mt-6 text-[10px] text-neutral-400 uppercase tracking-widest font-bold">
+                100% Free Beta Access
+            </div>
+        </div>
+    </div>
+</div>

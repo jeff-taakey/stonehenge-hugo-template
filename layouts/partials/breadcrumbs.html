@@ -1,0 +1,59 @@
+<ol class="text-sm text-neutral-500 dark:text-neutral-400 print:hidden flex flex-wrap items-center gap-1">
+  <li class="inline">
+    <a class="hover:underline decoration-neutral-300 dark:underline-neutral-600" href="{{ "/" | relLangURL }}">
+      {{ .Site.Home.LinkTitle | default "Home" }}
+    </a>
+  </li>
+
+  {{ if not .IsHome }}
+    <li class="inline"><span class="px-1 text-primary-500">></span></li>
+    {{ template "breadcrumb-logic" . }}
+  {{ end }}
+</ol>
+
+{{ define "breadcrumb-logic" }}
+  {{ if eq .Section "resources" }}
+    {{/* --- 处理 Pillar 文章的特殊逻辑 --- */}}
+    {{ $category := index .Params.categories 0 }}
+    {{ if $category }}
+      <li class="inline">
+        {{/* 这里手动指定链接到分类页，如果没分类页就仅显示文字 */}}
+        <a class="hover:underline decoration-neutral-300 dark:underline-neutral-600" href="/{{ $category | urlize }}/">
+          {{ $category }}
+        </a>
+      </li>
+      <li class="inline"><span class="px-1 text-primary-500">></span></li>
+    {{ end }}
+    
+    {{/* 显示当前文章的 linkTitle */}}
+    <li class="inline font-semibold text-neutral-900 dark:text-neutral-100">
+      {{ .LinkTitle | default "This article" }}
+    </li>
+
+  {{ else }}
+    {{/* --- 处理普通文章的递归逻辑 --- */}}
+    {{ template "breadcrumb-crumb" (dict "page" . "current" $) }}
+  {{ end }}
+{{ end }}
+
+{{/* 原有的递归渲染模板保持不变，用于普通页面 */}}
+{{ define "breadcrumb-crumb" }}
+  {{ $page := .page }}
+  {{ $current := .current }}
+  {{ if $page.Parent }}
+    {{ template "breadcrumb-crumb" (dict "page" $page.Parent "current" $current) }}
+  {{ end }}
+  {{ if and (not $page.IsHome) (ne $page $current) }}
+    <li class="inline">
+      <a class="hover:underline decoration-neutral-300 dark:underline-neutral-600" href="{{ $page.RelPermalink }}">
+        {{ $page.LinkTitle | default $page.Title }}
+      </a>
+    </li>
+    <li class="inline"><span class="px-1 text-primary-500">></span></li>
+  {{ end }}
+  {{ if eq $page $current }}
+    <li class="inline font-semibold text-neutral-900 dark:text-neutral-100">
+      {{ $page.LinkTitle | default $page.Title }}
+    </li>
+  {{ end }}
+{{ end }}

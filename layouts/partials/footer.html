@@ -3,9 +3,40 @@
 
 <!-- 底部内容区域 -->
 <footer class="mx-auto max-w-3xl py-8 text-sm text-gray-300">
-  <div>
-    <div>
-      <p>© 2025 [Stonehenge-Hugo-Template].com All rights reserved.</p>
+  <style>
+  .footer-banner-dark { display: none !important; }
+  .footer-banner-light { display: block !important; }
+
+  .dark .footer-banner-dark { display: block !important; }
+  .dark .footer-banner-light { display: none !important; }
+  </style>
+
+  <div class="footer-container">
+  <div class="mb-6 flex justify-center">
+    <a href="/">
+      <img src="/images/CloudCertPro-logo-bright.jpg" 
+           alt="CloudCertPro Light" 
+           width="260" 
+           class="footer-banner-light h-auto rounded-lg shadow-sm opacity-90 hover:opacity-100 transition-opacity border border-gray-100" />
+      <img src="/images/CloudCertPro-logo-dark.jpg" 
+           alt="CloudCertPro Dark" 
+           width="260" 
+           class="footer-banner-dark h-auto rounded-lg shadow-sm opacity-90 hover:opacity-100 transition-opacity border border-gray-800" />
+    </a>
+  </div>
+  <p class="copyright text-center">© {{ now.Format "2006" }} CloudCertPro. All rights reserved.<br>
+    Powered by <a href="https://www.stonehengeedtech.com" class="underline hover:text-gray-100">Stonehenge EdTech</a>.
+  </p>
+    <div class="legal-links">
+      <a href="/about-us">About Us</a>
+        <a href="/terms-of-service">Terms of Service</a>
+        <a href="/privacy-policy">Privacy Policy</a>
+        <a href="/cookie-policy">Cookie Policy</a>
+        <a href="/contact">Support & Contact</a>
     </div>
   </div>
+
 </footer>
+
+<!-- 引入锁屏逻辑 -->
+{{ partial "gate-unlock.html" . }}

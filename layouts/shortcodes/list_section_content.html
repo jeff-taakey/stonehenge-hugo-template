@@ -1,0 +1,37 @@
+{{/* Shortcode: list_section_content
+    功能：获取指定 section 下的所有子栏目（二级目录），并以卡片形式展示它们的标题和摘要。
+    用法：{{< list_section_content section="aws" >}}
+*/}}
+
+{{ $sectionPath := .Get "section" | default .Page.Section }}
+{{ $parentPage := .Site.GetPage $sectionPath }}
+
+{{ if $parentPage }}
+  <div class="section-cards-container grid grid-cols-1 md:grid-cols-2 gap-4">
+    {{/* 遍历当前页面下的所有子页面（即子文件夹的 _index.md） */}}
+    {{ range $parentPage.Sections.ByWeight }}
+      <div class="section-card border border-neutral-200 dark:border-neutral-700 rounded-lg p-6 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
+        <a href="{{ .RelPermalink }}" class="no-underline">
+          <h3 class="mt-0 text-xl font-bold text-primary-600 dark:text-primary-400">
+            {{ .Title }}
+          </h3>
+          <p class="text-sm text-neutral-500 dark:text-neutral-400 mb-4">
+            {{ .Date.Format "January 2, 2006" }} • {{ .WordCount }} words
+          </p>
+          <div class="text-neutral-700 dark:text-neutral-300">
+            {{ if .Summary }}
+              {{ .Summary | plainify | truncate 150 }}
+            {{ else }}
+              Click to explore the latest architectural drills and deep-dives for {{ .Title }}.
+            {{ end }}
+          </div>
+          <div class="mt-4 text-primary-500 font-semibold text-sm italic">
+            Explore Sector &rarr;
+          </div>
+        </a>
+      </div>
+    {{ end }}
+  </div>
+{{ else }}
+  <p class="text-red-500">Error: Section "{{ $sectionPath }}" not found.</p>
+{{ end }}

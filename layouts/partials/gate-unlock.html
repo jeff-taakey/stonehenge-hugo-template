@@ -1,0 +1,65 @@
+{{/* layouts/partials/gate-unlock.html */}}
+<script>
+(function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasUnlockParam = urlParams.get('unlocked') === 'true';
+
+    function initUnlock() {
+        const gates = document.querySelectorAll('.gate-container');
+        let isHandled = false;
+
+        // 1. 遍历页面上所有的 Gate 组件
+        gates.forEach(gate => {
+            const colId = gate.getAttribute('data-column');
+            
+            // 健壮性检查：如果 colId 为空或字符串 "null"，跳过处理
+            if (!colId || colId === "null") return;
+
+            const storageKey = 'unlocked_' + colId;
+            const globalKey = 'cert_devpro_all_access';
+
+            // 检查解锁条件
+            if (hasUnlockParam || localStorage.getItem(storageKey) || localStorage.getItem(globalKey)) {
+                if (hasUnlockParam) {
+                    localStorage.setItem(storageKey, 'true');
+                }
+
+                // 执行 UI 解锁
+                const overlay = gate.querySelector('.gate-overlay');
+                const content = gate.querySelector('.gate-content');
+                if (overlay) overlay.remove();
+                if (content) {
+                    content.classList.remove('blur-md', 'select-none', 'pointer-events-none');
+                    content.style.filter = 'none';
+                }
+                isHandled = true;
+            }
+        });
+
+        // 2. 路径推断逻辑（针对没有 Gate 组件的栏目页）
+        if (hasUnlockParam && !isHandled) {
+            const path = window.location.pathname;
+            const columns = ['saa-c03', 'sap-c02', 'az-104', 'az-305', 'pca', 'ace'];
+            const matchedCol = columns.find(col => path.includes(col));
+            
+            if (matchedCol) {
+                localStorage.setItem('unlocked_' + matchedCol, 'true');
+                isHandled = true;
+            }
+        }
+
+        // 3. 只有成功识别了有效的 column 后，才清洗 URL
+        if (hasUnlockParam && isHandled) {
+            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+        }
+    }
+
+    // 确保 DOM 完全加载后再运行
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initUnlock);
+    } else {
+        initUnlock();
+    }
+})();
+</script>
