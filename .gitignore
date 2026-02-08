@@ -5,6 +5,9 @@ resources/_gen/
 
 # Jeff Taakey
 draft/
+_draft/
+temp/
+_temp/
 
 # local temp files
 .tmp/
