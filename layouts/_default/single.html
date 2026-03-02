@@ -85,14 +85,18 @@
           {{ $lang := print "."  .Lang  ".md" }}
           {{ $path = replace $path $lang ".md" }}
         {{ end }}
+        {{/* 修改点开始：安全获取并处理 JS */}}
         {{ $jsPage := resources.Get "js/page.js" }}
-        {{ $jsPage = $jsPage | resources.Minify | resources.Fingerprint (site.Params.fingerprintAlgorithm | default "sha512") }}
-        <script
-          type="text/javascript"
-          src="{{ $jsPage.RelPermalink }}"
-          integrity="{{ $jsPage.Data.Integrity }}"
-          data-oid="views_{{ $path }}"
-          data-oid-likes="likes_{{ $path }}"></script>
+        {{ if $jsPage }}
+          {{ $jsPage = $jsPage | resources.Minify | resources.Fingerprint (site.Params.fingerprintAlgorithm | default "sha512") }}
+          <script
+            type="text/javascript"
+            src="{{ $jsPage.RelPermalink }}"
+            integrity="{{ $jsPage.Data.Integrity }}"
+            data-oid="views_{{ $path }}"
+            data-oid-likes="likes_{{ $path }}"></script>
+        {{ end }}
+        {{/* 修改点结束 */}}
       {{ end }}
 
     </section>
@@ -103,7 +107,7 @@
     {{/* Jeff Taakey: subscribe 订阅框 */}}
     {{/* 逻辑：如果没有手动隐藏，且页面中没有使用 gate shortcode，才显示 newsletter */}}
     {{ if and (not .Params.hide_newsletter) (not (.HasShortcode "gate")) }}
-      {{ partial "newsletter.html" . }}
+      <!-- {{ partial "newsletter.html" . }} -->
     {{ end }}
 
     {{/* Footer */}}
